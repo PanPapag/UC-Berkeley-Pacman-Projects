@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -87,30 +87,90 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Stack
+
+    path = [] # Every state keeps it's path from the starting state
+    visited = set() # Set data structure is the most appropriate to use in this case
+    stateAgenda = Stack() # Keeping states into a stack in order to implement DFS
+
+    # Check if initial state is goal states
+    if problem.isGoalState(problem.getStartState()):
+        return path
+    # otherwise push initial state into the stack
+    stateAgenda.push((problem.getStartState(), path))
+
+    while(True):
+        # terminate condition
+        if stateAgenda.isEmpty():
+            return []
+        # extract info for current state and its path
+        current_state, path = stateAgenda.pop()
+        # add to visites set
+        visited.add(current_state)
+        # check if we have reached to the goal state
+        # if so, return its path
+        if problem.isGoalState(current_state):
+            return path
+        # otherwise get successors
+        succStates = problem.getSuccessors(current_state)
+        for state in succStates:
+            # only if we havent visited this state again
+            if state[0] not in visited:
+                # construct new path and push state to agenda
+                stateAgenda.push((state[0], path + [state[1]]))
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
+
+    path = [] # Every state keeps it's path from the starting state
+    visited = set() # Set data structure is the most appropriate to use in this case
+    stateAgenda = Queue() # Keeping states into a queue in order to implement BFS
+
+    # Check if initial state is goal states
+    if problem.isGoalState(problem.getStartState()):
+        return path
+    # otherwise push initial state into the stack
+    stateAgenda.push((problem.getStartState(), path))
+
+    while(True):
+        # terminate condition
+        if stateAgenda.isEmpty():
+            return []
+        # extract info for current state and its path
+        current_state, path = stateAgenda.pop()
+        # add to visites set
+        visited.add(current_state)
+        # check if we have reached to the goal state
+        # if so, return its path
+        if problem.isGoalState(current_state):
+            return path
+        # otherwise get successors
+        succStates = problem.getSuccessors(current_state)
+        for state in succStates:
+            # only if we havent visited this state again and this state is not into our stateAgenda
+            if state[0] not in visited and state[0] not in (allStates[0] for allStates in stateAgenda.list):
+                # construct new path and push state to agenda
+                stateAgenda.push((state[0], path + [state[1]]))
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
-def nullHeuristic(state, problem=None):
+def nullHeuristic(state, problem = None):
     """
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem, heuristic = nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
-
 
 # Abbreviations
 bfs = breadthFirstSearch
