@@ -158,7 +158,53 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueue
+
+    path = [] # Every state keeps it's path from the starting state
+    visited = set() # Set data structure is the most appropriate to use in this case
+    stateAgenda = PriorityQueue() # Keeping states into a PriorityQueuequeue in order to implement UCS
+
+    # Check if initial state is goal states
+    if problem.isGoalState(problem.getStartState()):
+        return path
+    # otherwise push initial state into the PriorityQueue with path-cost = 0
+    stateAgenda.push((problem.getStartState(), path), 0)
+
+    while(True):
+        # terminate condition
+        if stateAgenda.isEmpty():
+            return []
+        # extract info for current state and its path
+        current_state, path = stateAgenda.pop()
+        # check if we have reached to the goal state
+        # add to visites set
+        visited.add(current_state)
+        # if so, return its path
+        if problem.isGoalState(current_state):
+            return path
+        # otherwise get successors
+        succStates = problem.getSuccessors(current_state)
+        for state in succStates:
+            # only if we havent visited this state again and this state is not into our stateAgenda
+            if state[0] not in visited and state[0] not in (allStates[2][0] for allStates in stateAgenda.heap):
+                # construct new path and push state to agenda
+                new_path = path + [state[1]]
+                # find new path cost
+                state_priority = problem.getCostOfActions(new_path)
+                # push new path and its cost into agenda
+                stateAgenda.push((state[0], new_path), state_priority)
+            # otherwise, if state is in frontier
+            elif state[0] not in visited and state[0] in (allStates[2][0] for allStates in stateAgenda.heap):
+                for child_state in stateAgenda.heap:
+                    if child_state[2][0] == state[0]:
+                        old_priority = problem.getCostOfActions(child_state[2][1])
+                        break
+
+                new_priority = problem.getCostOfActions(path + [state[1]])
+                # and has higher Path-Cost
+                if new_priority < old_priority:
+                    stateAgenda.update((state[0], path + [state[1]]), new_priority)
+
 
 def nullHeuristic(state, problem = None):
     """
