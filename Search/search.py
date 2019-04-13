@@ -188,22 +188,22 @@ def uniformCostSearch(problem):
             # only if we havent visited this state again and this state is not into our stateAgenda
             if state[0] not in visited and state[0] not in (allStates[2][0] for allStates in stateAgenda.heap):
                 # construct new path and push state to agenda
-                new_path = path + [state[1]]
+                newPath = path + [state[1]]
                 # find new path cost
-                state_priority = problem.getCostOfActions(new_path)
+                statePriority = problem.getCostOfActions(newPath)
                 # push new path and its cost into agenda
-                stateAgenda.push((state[0], new_path), state_priority)
+                stateAgenda.push((state[0], newPath), statePriority)
             # otherwise, if state is in frontier
             elif state[0] not in visited and state[0] in (allStates[2][0] for allStates in stateAgenda.heap):
-                for child_state in stateAgenda.heap:
-                    if child_state[2][0] == state[0]:
-                        old_priority = problem.getCostOfActions(child_state[2][1])
+                for childState in stateAgenda.heap:
+                    if childState[2][0] == state[0]:
+                        oldPriority = problem.getCostOfActions(childState[2][1])
                         break
 
-                new_priority = problem.getCostOfActions(path + [state[1]])
+                newPriority = problem.getCostOfActions(path + [state[1]])
                 # and has higher Path-Cost
-                if new_priority < old_priority:
-                    stateAgenda.update((state[0], path + [state[1]]), new_priority)
+                if newPriority < oldPriority:
+                    stateAgenda.update((state[0], path + [state[1]]), newPriority)
 
 
 def nullHeuristic(state, problem = None):
@@ -216,7 +216,8 @@ def nullHeuristic(state, problem = None):
 def aStarSearch(problem, heuristic = nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import PriorityQueueWithFunction
+
 
 # Abbreviations
 bfs = breadthFirstSearch
