@@ -288,7 +288,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self._visited, self._visitedlist = {}, []
         self.startState = (self.startingPosition, (((1,1), False), ((1,top), False), ((right,1), False), ((right,top), False)))
 
     def getStartState(self):
@@ -309,8 +308,8 @@ class CornersProblem(search.SearchProblem):
             cornerVisited = corner[1]
             if not cornerVisited:
                 return False
-            else:
-                return True
+
+        return True
 
     def getSuccessors(self, state):
         """
@@ -324,12 +323,12 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+        currentPosition = state[0]
+        cornersState = state[1]
 
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             "*** YOUR CODE HERE ***"
-            currentPosition = state[0]
-            cornersState = state[1]
             newVisitedCorners = []
             x, y = currentPosition
             dx, dy = Actions.directionToVector(action)
@@ -339,21 +338,18 @@ class CornersProblem(search.SearchProblem):
             stepCost = 1
 
             if not hitsWall:
-                if nextState in self.corners:
-                    for corner in cornersState:
-                        cornerXY = corner[0]
-                        cornerVisited = corner[1]
-                        if nextState == cornerXY:
-                            newVisitedCorners.append((cornerXY,True))
-                        else:
-                            newVisitedCorners.append((cornerXY,cornerVisited))
+                for corner in cornersState:
+                    cornerXY = corner[0]
+                    cornerVisited = corner[1]
+                    print(cornerXY, cornerVisited)
+                    if nextState == cornerXY:
+                        newVisitedCorners.append((cornerXY,True))
+                    else:
+                        newVisitedCorners.append((cornerXY,cornerVisited))
                 successors.append(((nextState, tuple(newVisitedCorners)), action, stepCost))
 
 
         self._expanded += 1 # DO NOT CHANGE
-        if state not in self._visited:
-            self._visited[state] = True
-            self._visitedlist.append(state)
         return successors
 
     def getCostOfActions(self, actions):
