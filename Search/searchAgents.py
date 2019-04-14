@@ -341,7 +341,6 @@ class CornersProblem(search.SearchProblem):
                 for corner in cornersState:
                     cornerXY = corner[0]
                     cornerVisited = corner[1]
-                    print(cornerXY, cornerVisited)
                     if nextState == cornerXY:
                         newVisitedCorners.append((cornerXY,True))
                     else:
