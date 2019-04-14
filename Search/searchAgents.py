@@ -288,8 +288,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self._visited = {}
-        self.startState = (self.startingPosition, [0, 0, 0, 0])
+        self._visited, self._visitedlist = {}, []
+        self.startState = (self.startingPosition, [0, 0, 0, 0]) #TODO should change that
 
     def getStartState(self):
         """
@@ -304,9 +304,9 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        corners_state = state[1]
+        cornersState = state[1]
 
-        if 0 in corners_state:
+        if 0 in cornersState:
             return False
         else:
             return True
@@ -324,25 +324,28 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         currentPosition = state[0]
-        visited_corners = state[1]
-        
+        visitedCorners = state[1]
+
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             "*** YOUR CODE HERE ***"
-            x,y = currentPosition
+            x, y = currentPosition
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             nextState = (nextx, nexty)
             hitsWall = self.walls[nextx][nexty]
-            step_cost = 1
+            stepCost = 1
 
             if not hitsWall:
                 if nextState in self.corners:
-                    visited_corners[self.corners.index(next_state)] = 1
-                successors.append((nextState, action, cost))
+                    visitedCorners[self.corners.index(nextState)] = 1 #TODO unhashable
+                successors.append((nextState, visitedCorners), action, stepCost)
 
 
         self._expanded += 1 # DO NOT CHANGE
+        if state not in self._visited:
+            self._visited[state] = True
+            self._visitedlist.append(state)
         return successors
 
     def getCostOfActions(self, actions):
