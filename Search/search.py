@@ -89,121 +89,98 @@ def depthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     from util import Stack
 
-    path = [] # Every state keeps it's path from the starting state
-    visited = set() # Set data structure is the most appropriate to use in this case
-    stateAgenda = Stack() # Keeping states into a stack in order to implement DFS
-
-    # Check if initial state is goal states
-    if problem.isGoalState(problem.getStartState()):
-        return path
-    # otherwise push initial state into the stack
-    stateAgenda.push((problem.getStartState(), path))
+    visited = set() # Keep visited nodes into a set
+    fringe = Stack() # Keeping nodes along with their paths into a stack in order to implement DFS
+    fringe.push((problem.getStartState(), [])) # Push (Node, [path-from-start-to-node]) into the fringe
 
     while(True):
-        # terminate condition
-        if stateAgenda.isEmpty():
-            return []
-        # extract info for current state and its path
-        current_state, path = stateAgenda.pop()
-        # add to visites set
-        visited.add(current_state)
-        # check if we have reached to the goal state
-        # if so, return its path
-        if problem.isGoalState(current_state):
-            return path
-        # otherwise get successors
-        succStates = problem.getSuccessors(current_state)
-        for state in succStates:
-            # only if we havent visited this state again
-            if state[0] not in visited:
-                # construct new path and push state to agenda
-                stateAgenda.push((state[0], path + [state[1]]))
-
+        # get current_node and the path to reach to it
+        current_node, path_to_node = fringe.pop()
+        # Check if we have reached to goal state
+        if problem.isGoalState(current_node):
+            # if so break and return path to goal state
+            break
+        else:
+            # otherwise, if node has not been visited again
+            if current_node not in visited:
+                visited.add(current_node)   # add newly visited node to visited set
+                successors = problem.getSuccessors(current_node)   # and get its successors
+                for successor in successors:
+                    child_node = successor[0]
+                    child_path = successor[1]
+                    # construct full path to child node
+                    full_path = path_to_node + [child_path]
+                    # Push (child_node,[full-path-from-start-to-child-node]) into the fringe
+                    fringe.push((child_node, full_path))
+    # return full path to goal state
+    return path_to_node
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     from util import Queue
 
-    path = [] # Every state keeps it's path from the starting state
-    visited = set() # Set data structure is the most appropriate to use in this case
-    stateAgenda = Queue() # Keeping states into a queue in order to implement BFS
-
-    # Check if initial state is goal states
-    if problem.isGoalState(problem.getStartState()):
-        return path
-    # otherwise push initial state into the stack
-    stateAgenda.push((problem.getStartState(), path))
+    visited = set() # Keep visited nodes into a set
+    fringe = Queue() # Keeping nodes along with their paths into a queue in order to implement BFS
+    fringe.push((problem.getStartState(), [])) # Push (Node, [path-from-start-to-node]) into the fringe
 
     while(True):
-        # terminate condition
-        if stateAgenda.isEmpty():
-            return []
-        # extract info for current state and its path
-        current_state, path = stateAgenda.pop()
-        # add to visites set
-        visited.add(current_state)
-        # check if we have reached to the goal state
-        # if so, return its path
-        if problem.isGoalState(current_state):
-            return path
-        # otherwise get successors
-        succStates = problem.getSuccessors(current_state)
-        for state in succStates:
-            # only if we havent visited this state again and this state is not into our stateAgenda
-            if state[0] not in visited and state[0] not in (allStates[0] for allStates in stateAgenda.list):
-                # construct new path and push state to agenda
-                stateAgenda.push((state[0], path + [state[1]]))
+        # get current_node and the path to reach to it
+        current_node, path_to_node = fringe.pop()
+        # Check if we have reached to goal state
+        if problem.isGoalState(current_node):
+            # if so break and return path to goal state
+            break
+        else:
+            # otherwise, if node has not been visited again
+            if current_node not in visited:
+                visited.add(current_node)   # add newly visited node to visited set
+                successors = problem.getSuccessors(current_node)   # and get its successors
+                for successor in successors:
+                    child_node = successor[0]
+                    child_path = successor[1]
+                    # construct full path to child node
+                    full_path = path_to_node + [child_path]
+                    # Push (child_node,[full-path-from-start-to-child-node]) into the fringe
+                    fringe.push((child_node, full_path))
+    # return full path to goal state
+    return path_to_node
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
 
-    path = [] # Every state keeps it's path from the starting state
-    visited = set() # Set data structure is the most appropriate to use in this case
-    stateAgenda = PriorityQueue() # Keeping states into a PriorityQueuequeue in order to implement UCS
-
-    # Check if initial state is goal states
-    if problem.isGoalState(problem.getStartState()):
-        return path
-    # otherwise push initial state into the PriorityQueue with path-cost = 0
-    stateAgenda.push((problem.getStartState(), path), 0)
+    visited = set() # Keep visited nodes into a set
+    fringe = PriorityQueue() # Keeping nodes along with their paths into a PriorityQueuequeue in order to implement UCS
+    fringe.push((problem.getStartState(), [], 0), 0) # Push (Node, [path-from-start-to-node], initial-cost = 0) into the fringe
 
     while(True):
-        # terminate condition
-        if stateAgenda.isEmpty():
-            return []
-        # extract info for current state and its path
-        current_state, path = stateAgenda.pop()
-        # check if we have reached to the goal state
-        # add to visites set
-        visited.add(current_state)
-        # if so, return its path
-        if problem.isGoalState(current_state):
-            return path
-        # otherwise get successors
-        succStates = problem.getSuccessors(current_state)
-        for state in succStates:
-            # only if we havent visited this state again and this state is not into our stateAgenda
-            if state[0] not in visited and state[0] not in (allStates[2][0] for allStates in stateAgenda.heap):
-                # construct new path and push state to agenda
-                newPath = path + [state[1]]
-                # find new path cost
-                statePriority = problem.getCostOfActions(newPath)
-                # push new path and its cost into agenda
-                stateAgenda.push((state[0], newPath), statePriority)
-            # otherwise, if state is in frontier
-            elif state[0] not in visited and state[0] in (allStates[2][0] for allStates in stateAgenda.heap):
-                for childState in stateAgenda.heap:
-                    if childState[2][0] == state[0]:
-                        oldPriority = problem.getCostOfActions(childState[2][1])
-                        break
-
-                newPriority = problem.getCostOfActions(path + [state[1]])
-                # and has higher Path-Cost
-                if newPriority < oldPriority:
-                    stateAgenda.update((state[0], path + [state[1]]), newPriority)
+        # get current_node and the path to reach to it
+        current_node, path_to_node, cost_to_node = fringe.pop()
+        # Check if we have reached to goal state
+        if problem.isGoalState(current_node):
+            # if so break and return path to goal state
+            break
+        else:
+            # otherwise, if node has not been visited again
+            if current_node not in visited:
+                visited.add(current_node)   # add newly visited node to visited set
+                successors = problem.getSuccessors(current_node)   # and get its successors
+                for successor in successors:
+                    child_node = successor[0]
+                    child_path = successor[1]
+                    child_cost = successor[2]
+                    # construct full path to child node
+                    full_path = path_to_node + [child_path]
+                    # construct full cost to child node
+                    full_cost = cost_to_node + child_cost
+                    # in uniformCostSearch Priority is determined by actual cost to child
+                    priority = full_cost
+                    # Push (child_node,[full-path-from-start-to-child-node], full-cost-to-child-node) into the fringe
+                    fringe.push((child_node, full_path, full_cost), priority)
+    # return full path to goal state
+    return path_to_node
 
 
 def nullHeuristic(state, problem = None):
@@ -216,8 +193,39 @@ def nullHeuristic(state, problem = None):
 def aStarSearch(problem, heuristic = nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    from util import PriorityQueueWithFunction
+    from util import PriorityQueue
 
+    visited = set() # Keep visited nodes into a set
+    fringe = PriorityQueue() # Keeping nodes along with their paths into a PriorityQueuequeue in order to implement A*
+    # Push (Node, [path-from-start-to-node], initial-cost = 0) into the fringe
+    fringe.push((problem.getStartState(), [], 0), 0 + heuristic(problem.getStartState(), problem))
+
+    while(True):
+        # get current_node and the path to reach to it
+        current_node, path_to_node, cost_to_node = fringe.pop()
+        # Check if we have reached to goal state
+        if problem.isGoalState(current_node):
+            # if so break and return path to goal state
+            break
+        else:
+            # otherwise, if node has not been visited again
+            if current_node not in visited:
+                visited.add(current_node)   # add newly visited node to visited set
+                successors = problem.getSuccessors(current_node)   # and get its successors
+                for successor in successors:
+                    child_node = successor[0]
+                    child_path = successor[1]
+                    child_cost = successor[2]
+                    # construct full path to child node
+                    full_path = path_to_node + [child_path]
+                    # construct full cost to child node
+                    full_cost = cost_to_node + child_cost
+                    # in A* Priority is determined by actual cost to child node + heustic cost
+                    priority = full_cost +  heuristic(child_node, problem)
+                    # Push (child_node,[full-path-from-start-to-child-node], full-cost-to-child-node) into the fringe
+                    fringe.push((child_node, full_path, full_cost), priority)
+    # return full path to goal state
+    return path_to_node
 
 # Abbreviations
 bfs = breadthFirstSearch
