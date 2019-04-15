@@ -384,19 +384,23 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
     "*** YOUR CODE HERE ***"
-    # Heuristic: From current position find the closest corner to you, using Manhattan distance
+    # Heuristic: From current position find the corner with maximum distance from currentPos, using Manhattan distance
+    # If it is goal state return 0
+    if problem.isGoalState(state):
+        return 0
+
+    distancesFromGoal = []
     currentPosition = state[0]
     cornersState = state[1]
+
     for corner in cornersState:
         cornerXY = corner[0]
         cornerVisited = corner[1]
         if not cornerVisited:
-            manhattanDistanceToCorner = myManhanttanDistance(currentPosition, cornerXY)
-            return manhattanDistanceToCorner
+            distancesFromGoal.append(util.manhattanDistance(currentPosition, cornerXY))
 
-    return 0
+    return max(distancesFromGoal)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
