@@ -11,7 +11,6 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
 from util import manhattanDistance
 from game import Directions
 import random, util
@@ -127,10 +126,42 @@ class MultiAgentSearchAgent(Agent):
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
+    def isTerminalNode(self, gameState):
+        if gameState.isWin() or gameState.isLose():
+            return True
+        else:
+            return False
+
+    def isMaximizingPlayer(self, agentIndex):
+        if agentIndex == 0:
+            return True
+        elif agentIndex >= 1:
+            return False
+
 class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
     """
+    def minimax(self, gameState, depth, agentIndex):
+
+        if agentIndex >= gameState.getNumAgents():
+            agentIndex = 0
+            depth -= 1
+
+        if depth == 0 or self.isTerminalNode(gameState):
+            return self.evaluationFunction(gameState)
+
+        if self.isMaximizingPlayer(agentIndex):
+            value = float("-inf")
+            for action in gameState.getLegalActions(agentIndex):
+                value = max(value, self.minimax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1))
+            return value
+
+        else:
+            value = float("inf")
+            for action in gameState.getLegalActions(agentIndex):
+                value = max(value, self.minimax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex - 1))
+            return value
 
     def getAction(self, gameState):
         """
@@ -150,7 +181,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.minimax(gameState, self.depth, 0)
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
