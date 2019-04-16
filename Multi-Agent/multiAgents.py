@@ -231,13 +231,84 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
     """
+    def alphaBeta(self, gameState, depth, alpha, beta, agentIndex):
+        # when all agents' possible outcomes in this level have been examined go one level deeper
+        if agentIndex >= gameState.getNumAgents():
+            agentIndex = 0
+            depth -= 1
+
+        if depth == 0 or self.isTerminalNode(gameState):
+            return self.evaluationFunction(gameState)
+
+        if self.isMaximizingPlayer(agentIndex):
+            return self.maxValue(gameState, depth, alpha, beta, agentIndex)
+
+        else:
+            return self.minValue(gameState, depth, alpha, beta, agentIndex)
+
+    def maxValue(self, gameState, depth, alpha, beta, agentIndex):
+        maximum = ("unknown", float("-inf"))
+
+        if not gameState.getLegalActions(agentIndex):
+            return self.evaluationFunction(gameState)
+
+        for action in gameState.getLegalActions(agentIndex):
+            if action == Directions.STOP:
+                continue
+
+            retVal = self.alphaBeta(gameState.generateSuccessor(agentIndex, action), depth, alpha, beta, agentIndex + 1)
+
+            maxAction, maxVal = maximum
+            # check if retVal has been returned by not legal move condition
+            if type(retVal) is not tuple:
+                newVal = retVal
+            else:
+                _ ,newVal = retVal
+
+            if newVal > maxVal:
+                maximum = (action, newVal)
+
+            if maximum[1] > beta:
+                return maximum
+            alpha = max(alpha, maximum[1])
+
+        return maximum
+
+    def minValue(self, gameState, depth, alpha, beta, agentIndex):
+        minimum = ("unknown", float("inf"))
+
+        if not gameState.getLegalActions(agentIndex):
+            return self.evaluationFunction(gameState)
+
+        for action in gameState.getLegalActions(agentIndex):
+            if action == Directions.STOP:
+                continue
+
+            retVal = self.alphaBeta(gameState.generateSuccessor(agentIndex, action), depth, alpha, beta, agentIndex + 1)
+
+            minAction, minVal = minimum
+            # check if retVal has been returned by not legal move condition
+            if type(retVal) is not tuple:
+                newVal = retVal
+            else:
+                _ ,newVal = retVal
+
+            if newVal < minVal:
+                minimum = (action, newVal)
+
+            if minimum[1] < alpha:
+                return minimum
+            beta = min(beta, minimum[1])
+
+        return minimum
 
     def getAction(self, gameState):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        bestAction, _ = self.alphaBeta(gameState, self.depth, float("-inf"), float("inf"), 0)
+        return bestAction
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
