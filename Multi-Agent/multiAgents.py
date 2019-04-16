@@ -143,9 +143,10 @@ class MinimaxAgent(MultiAgentSearchAgent):
       Your minimax agent (question 2)
     """
     def miniMax(self, gameState, depth, agentIndex):
+        # when all agents' possible outcomes in this level have been examined go one level deeper
         if agentIndex >= gameState.getNumAgents():
             agentIndex = 0
-            curDepth -= 1
+            depth -= 1
 
         if depth == 0 or self.isTerminalNode(gameState):
             return self.evaluationFunction(gameState)
@@ -157,30 +158,53 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return self.minValue(gameState, depth, agentIndex)
 
     def maxValue(self, gameState, depth, agentIndex):
+        maximum = ("unknown", float("-inf"))
+
         if not gameState.getLegalActions(agentIndex):
             return self.evaluationFunction(gameState)
-
-        value = ("unknown", float("-inf"))
 
         for action in gameState.getLegalActions(agentIndex):
             if action == Directions.STOP:
                 continue
-            value = max(value, self.miniMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1))
 
-        return value
+            retVal = self.miniMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1)
+
+            maxAction, maxVal = maximum
+            # check if retVal has been returned by not legal move condition
+            if type(retVal) is not tuple:
+                newVal = retVal
+            else:
+                _ ,newVal = retVal
+
+            if newVal > maxVal:
+                maximum = (action, newVal)
+
+        return maximum
 
     def minValue(self, gameState, depth, agentIndex):
+        minimum = ("unknown", float("inf"))
+
         if not gameState.getLegalActions(agentIndex):
             return self.evaluationFunction(gameState)
-
-        value = ("unknown", float("inf"))
 
         for action in gameState.getLegalActions(agentIndex):
             if action == Directions.STOP:
                 continue
-            value = min(value, self.miniMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex - 1))
 
-        return value
+            retVal = self.miniMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1)
+
+            minAction, minVal = minimum
+            # check if retVal has been returned by not legal move condition
+            if type(retVal) is not tuple:
+                newVal = retVal
+            else:
+                _ ,newVal = retVal
+
+            if newVal < minVal:
+                minimum = (action, newVal)
+
+
+        return minimum
 
     def getAction(self, gameState):
         """
@@ -200,8 +224,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        action, _ = self.miniMax(gameState, self.depth, 0)
-        return action
+        bestAction, _ = self.miniMax(gameState, self.depth, 0)
+        return bestAction
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
