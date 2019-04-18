@@ -221,7 +221,7 @@ def aStarSearch(problem, heuristic = nullHeuristic):
                     # construct full cost to child node
                     full_cost = cost_to_node + child_cost
                     # in A* Priority is determined by actual cost to child node + heustic cost
-                    priority = full_cost +  heuristic(child_node, problem)
+                    priority = full_cost + heuristic(child_node, problem)
                     # Push (child_node,[full-path-from-start-to-child-node], full-cost-to-child-node) into the fringe
                     fringe.push((child_node, full_path, full_cost), priority)
     # return full path to goal state
