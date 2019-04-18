@@ -395,10 +395,28 @@ def betterEvaluationFunction(currentGameState):
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
       evaluation function (question 5).
 
-      DESCRIPTION: <write something here so we know what you did>
+      DESCRIPTION:
+      The state evaluation is determined by the weighted linear function having
+      as variables the number of remaining pellets, the remaining food,
+      the distance to a ghost and the closest food
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Extract useful information about the  current game states
+    pacmanPos = currentGameState.getPacmanPosition()
+    foodPos = currentGameState.getFood().asList()
+    foodLeft = currentGameState.getNumFood()
+    capsulesPos = currentGameState.getCapsules()
+    capsulesLeft = len(currentGameState.getCapsules())
+    ghostsPos = currentGameState.getGhostStates()
+    ghostsScaredTime = [ghostPos.scaredTimer for ghostPos in ghostsPos]
+    # Variables of our weighted linear function
+    additionalFactor = 0
 
+    if currentGameState.isWin():
+        additionalFactor += float("inf")
+    elif currentGameState.isLose():
+        additionalFactor += float("-inf")
+
+    return currentGameState.getScore() + additionalFactor
 # Abbreviation
 better = betterEvaluationFunction
