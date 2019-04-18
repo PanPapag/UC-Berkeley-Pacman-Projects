@@ -332,14 +332,16 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     def maxValue(self, gameState, depth, agentIndex):
         maximum = ("unknown", float("-inf"))
 
+        legalActions = gameState.getLegalActions(agentIndex)
+
         if not gameState.getLegalActions(agentIndex):
             return self.evaluationFunction(gameState)
 
-        for action in gameState.getLegalActions(agentIndex):
+        for action in legalActions:
             if action == Directions.STOP:
                 continue
 
-            retVal = self.miniMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1)
+            retVal = self.expectiMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1)
 
             maxAction, maxVal = maximum
             # check if retVal has been returned by not legal move condition
@@ -353,19 +355,24 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         return maximum
 
-    def minValue(self, gameState, depth, agentIndex):
-        minimum = ("unknown", float("inf"))
+    def expValue(self, gameState, depth, agentIndex):
+        exp = ("unknown", float("inf"))
+
+        legalActions = gameState.getLegalActions(agentIndex)
+        actionPropability = 1.0 / len(legalActions)
+        avgScore = 0
 
         if not gameState.getLegalActions(agentIndex):
             return self.evaluationFunction(gameState)
 
-        for action in gameState.getLegalActions(agentIndex):
+        for action in legalActions:
             if action == Directions.STOP:
                 continue
 
-            retVal = self.miniMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1)
+            retVal = self.expectiMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1)
+            avgScore += actionPropability * retVal[1]
 
-            minAction, minVal = minimum
+            expAction, expVal = exp
             # check if retVal has been returned by not legal move condition
             if type(retVal) is not tuple:
                 newVal = retVal
