@@ -403,20 +403,38 @@ def betterEvaluationFunction(currentGameState):
     "*** YOUR CODE HERE ***"
     # Extract useful information about the  current game states
     pacmanPos = currentGameState.getPacmanPosition()
-    foodPos = currentGameState.getFood().asList()
+    foodList = currentGameState.getFood().asList()
     foodLeft = currentGameState.getNumFood()
-    capsulesPos = currentGameState.getCapsules()
+    capsulesList = currentGameState.getCapsules()
     capsulesLeft = len(currentGameState.getCapsules())
-    ghostsPos = currentGameState.getGhostStates()
-    ghostsScaredTime = [ghostPos.scaredTimer for ghostPos in ghostsPos]
-    # Variables of our weighted linear function
-    additionalFactor = 0
+    ghostsList = currentGameState.getGhostStates()
+    ghostsScaredTime = [ghost.scaredTimer for ghost in ghostsList]
 
+    # Examine the extreme cases where the game is either won or lost
     if currentGameState.isWin():
-        additionalFactor += float("inf")
+        return float("inf")
     elif currentGameState.isLose():
-        additionalFactor += float("-inf")
+        return float("-inf")
 
-    return currentGameState.getScore() + additionalFactor
+    # Find minimum distance to food
+    if foodList:
+        closestFood = min([manhattanDistance(pacmanPos, foodPos) for foodPos in foodList])
+    else:
+        closestFood = 0
+    # Find minimum distance to capsule
+    if capsulesList:
+        closestCapsule = min([manhattanDistance(pacmanPos, capsulePos) for capsulePos in capsulesList])
+    else:
+        closestCapsule = 0
+    # Find minimum distance to ghost
+    closestGhost = float("inf")
+    for ghost in ghostsList:
+        closestGhost = min(manhattanDistance(pacmanPos, ghost.getPosition()), closestGhost)
+    # Check if closest ghost is scared:
+    for ghost in ghostsList:
+        if ghost.scaredTimer and ghost.getPosition() == closestGhost:
+            return float("-inf")
+
+    return - 10 * closestFood - 2.5 * closestCapsule - 75 * capsulesLeft - 100 * foodLeft + 5 * closestGhost
 # Abbreviation
 better = betterEvaluationFunction
