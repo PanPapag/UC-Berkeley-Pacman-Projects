@@ -314,7 +314,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
     """
-    def expectimaxMax(self, gameState, depth, agentIndex):
+    def expectiMax(self, gameState, depth, agentIndex):
         # when all agents' possible outcomes in this level have been examined go one level deeper
         if agentIndex >= gameState.getNumAgents():
             agentIndex = 0
@@ -356,7 +356,6 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         return maximum
 
     def expValue(self, gameState, depth, agentIndex):
-        exp = ("unknown", float("inf"))
 
         legalActions = gameState.getLegalActions(agentIndex)
         actionPropability = 1.0 / len(legalActions)
@@ -370,20 +369,15 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 continue
 
             retVal = self.expectiMax(gameState.generateSuccessor(agentIndex, action), depth, agentIndex + 1)
-            avgScore += actionPropability * retVal[1]
-
-            expAction, expVal = exp
             # check if retVal has been returned by not legal move condition
             if type(retVal) is not tuple:
                 newVal = retVal
             else:
                 _ ,newVal = retVal
 
-            if newVal < minVal:
-                minimum = (action, newVal)
+            avgScore += actionPropability + newVal
 
-
-        return minimum
+        return avgScore
 
     def getAction(self, gameState):
         """
@@ -393,7 +387,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        bestAction, _ = self.expectiMax(gameState, self.depth, 0)
+        return bestAction
 
 def betterEvaluationFunction(currentGameState):
     """
