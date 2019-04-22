@@ -50,12 +50,17 @@ class PerceptronClassifier:
         self.features = trainingData[0].keys() # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
         # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
-
+        score = util.Counter()
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
                 "*** YOUR CODE HERE ***"
-                print(trainingData)
+                for label in self.legalLabels:
+                    score[label] = trainingData[i].__mul__(self.weights[label])
+                if not trainingLabels[i] == score.argMax():
+                    self.weights[trainingLabels[i]].__radd__(trainingData[i])
+                    self.weights[score.argMax()].__sub__(trainingData[i])
+
 
     def classify(self, data ):
         """
@@ -78,8 +83,5 @@ class PerceptronClassifier:
         Returns a list of the 100 features with the greatest weight for some label
         """
         featuresWeights = []
-
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
         return featuresWeights
